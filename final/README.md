@@ -210,8 +210,8 @@ Este proyecto se desarrolló como parte de una práctica de programación con Ja
 
 ## 👤 Autor
 
-- **Nombre del Autor**: [Tu Nombre Aquí]
-- **Correo Electrónico**: [tu.email@dominio.com]
+- **Nombre del Autor**: [Chuquiyauri Lagunas Albert]
+- **Correo Electrónico**: [p00904j@upla.edu.pe]
 - **Año de Creación**: 2025
 
 ---
@@ -220,7 +220,7 @@ Este proyecto se desarrolló como parte de una práctica de programación con Ja
 
 Este proyecto es de libre uso y distribución bajo fines educativos y académicos.
 ````
-
+## 📜 codigo del jFrame
 ```java
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -532,7 +532,434 @@ public class Inicio extends javax.swing.JFrame {
     // End of variables declaration                   
 }
 ```
+## 📜 codigo del controlador
+```java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package controlador;
 
+import modelo.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+
+import javax.swing.table.DefaultTableModel;
+
+import java.sql.PreparedStatement;
+
+import modelo.Carrera;
+
+import java.sql.Connection;
+
+
+public class ControladorCarnet {
+
+    private Connection conn;
+
+    public ControladorCarnet() {
+        conn = ConexionBD.getConnection();
+    }
+
+    // Listar carnets
+    public void listarCarnets(JTable tabla) {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Código");
+        model.addColumn("DNI");
+        model.addColumn("Nombre");
+        model.addColumn("Apellido");
+        model.addColumn("Facultad");
+        model.addColumn("Carrera");
+
+        String query = """
+            SELECT e.id_estudiante, e.codigo, e.dni, e.nombres, e.apellidos, 
+                   f.nombre_facultad, c.nombre_carrera
+            FROM estudiantes e
+            JOIN carreras c ON e.id_carrera = c.id_carrera
+            JOIN facultades f ON c.id_facultad = f.id_facultad
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id_estudiante"),
+                    rs.getString("codigo"),
+                    rs.getString("dni"),
+                    rs.getString("nombres"),
+                    rs.getString("apellidos"),
+                    rs.getString("nombre_facultad"),
+                    rs.getString("nombre_carrera")
+                });
+            }
+            tabla.setModel(model);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar: " + e.getMessage());
+        }
+    }
+
+    // Registrar nuevo carnet
+    public void registrarCarnet(Carnet carnet) {
+        String sql = """
+            INSERT INTO estudiantes (codigo, dni, nombres, apellidos, id_carrera)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, carnet.getCodigo());
+            stmt.setString(2, carnet.getDni());
+            stmt.setString(3, carnet.getNombres());
+            stmt.setString(4, carnet.getApellidos());
+            stmt.setInt(5, carnet.getIdCarrera());
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Carnet registrado correctamente.");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al registrar: " + e.getMessage());
+        }
+    }
+
+    // Actualizar carnet existente
+    public void actualizarCarnet(Carnet carnet) {
+        String sql = """
+            UPDATE estudiantes
+            SET codigo = ?, dni = ?, nombres = ?, apellidos = ?, id_carrera = ?
+            WHERE id_estudiante = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, carnet.getCodigo());
+            stmt.setString(2, carnet.getDni());
+            stmt.setString(3, carnet.getNombres());
+            stmt.setString(4, carnet.getApellidos());
+            stmt.setInt(5, carnet.getIdCarrera());
+            stmt.setInt(6, carnet.getId());
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Carnet actualizado correctamente.");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());
+        }
+    }
+
+    // Eliminar carnet
+    public void eliminarCarnet(int id) {
+        String sql = "DELETE FROM estudiantes WHERE id_estudiante = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Carnet eliminado correctamente.");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
+        }
+    }
+
+    // Cargar facultades
+    public List<Facultad> obtenerFacultades() {
+        List<Facultad> lista = new ArrayList<>();
+        String sql = "SELECT * FROM facultades";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(new Facultad(
+                        rs.getInt("id_facultad"),
+                        rs.getString("nombre_facultad")
+                ));
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error cargando facultades: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    // Cargar carreras por facultad
+    public List<Carrera> obtenerCarrerasPorFacultad(int idFacultad) {
+        List<Carrera> lista = new ArrayList<>();
+        String sql = "SELECT * FROM carreras WHERE id_facultad = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idFacultad);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                lista.add(new Carrera(
+                        rs.getInt("id_carrera"),
+                        rs.getString("nombre_carrera"),
+                        rs.getInt("id_facultad")
+                ));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error cargando carreras: " + e.getMessage());
+        }
+        return lista;
+    }
+}
+
+```
+## 📜 codigo del carnet
+```java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package modelo;
+
+public class Carnet {
+
+    private int id;
+    private String codigo;
+    private String dni;
+    private String nombres;
+    private String apellidos;
+    private int idCarrera;
+
+    // Constructor
+    public Carnet(int id, String codigo, String dni, String nombres, String apellidos, int idCarrera) {
+        this.id = id;
+        this.codigo = codigo;
+        this.dni = dni;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.idCarrera = idCarrera;
+    }
+
+    public Carnet() {
+    }
+
+    // Getters y Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public int getIdCarrera() {
+        return idCarrera;
+    }
+
+    public void setIdCarrera(int idCarrera) {
+        this.idCarrera = idCarrera;
+    }
+}
+
+```
+## 📜 codigo de la conexion de la base de datos
+```java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package modelo;
+
+public class Carnet {
+
+    private int id;
+    private String codigo;
+    private String dni;
+    private String nombres;
+    private String apellidos;
+    private int idCarrera;
+
+    // Constructor
+    public Carnet(int id, String codigo, String dni, String nombres, String apellidos, int idCarrera) {
+        this.id = id;
+        this.codigo = codigo;
+        this.dni = dni;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.idCarrera = idCarrera;
+    }
+
+    public Carnet() {
+    }
+
+    // Getters y Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public int getIdCarrera() {
+        return idCarrera;
+    }
+
+    public void setIdCarrera(int idCarrera) {
+        this.idCarrera = idCarrera;
+    }
+}
+
+```
+## 📜 codigo de la facutad
+```java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package modelo;
+
+public class Facultad {
+
+    private int id;
+    private String nombre;
+
+    public Facultad() {
+    }
+
+    public Facultad(int id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return nombre; // Para mostrar en el JComboBox
+    }
+}
+```
+## 📜 codigo de la carrera
+```java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package modelo;
+
+
+public class Carrera {
+
+    private int id;
+    private String nombre;
+    private int idFacultad;
+
+    public Carrera() {
+    }
+
+    public Carrera(int id, String nombre, int idFacultad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.idFacultad = idFacultad;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getIdFacultad() {
+        return idFacultad;
+    }
+
+    public void setIdFacultad(int idFacultad) {
+        this.idFacultad = idFacultad;
+    }
+
+    @Override
+    public String toString() {
+        return nombre; // Para mostrar en el JComboBox
+    }
+}
+```
+## 📜 codigo del controlador
 ```java
 
 ```
