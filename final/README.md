@@ -1,7 +1,7 @@
 # 🌟 **Sistema de Gestión de Carnets Universitarios** 🌟
 
 <p align="center">
-  <img src="./screenshots/logoupla.png" alt="Logo UPLA" width="200">
+  <img src="https://imagen.upla.edu.pe/wp-content/uploads/2023/02/cropped-LOGOUPLA-removebg-preview-300x115.png.webp" alt="Logo UPLA" width="200">
 </p>
 
 ---
