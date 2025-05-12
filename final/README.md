@@ -42,10 +42,10 @@ Este proyecto es una aplicación de escritorio en Java Swing que permite **gesti
 
 ### Componentes del formulario:
 
-![Interfaz principal](./codigo del Jframe.png).
-![Interfaz principal](./datos del jframe.png).
-![Interfaz principal](./diseño del Jframe.png).
-![Interfaz principal](./vista de componenetes.png).
+![Interfaz principal](./codigo_del_Jframe.png).
+![Interfaz principal](./datos_del_jframe.png).
+![Interfaz principal](./diseño_del_Jframe.png).
+![Interfaz principal](./vista_de_componenetes.png).
 
 ---
 
