@@ -15,13 +15,13 @@
 ## ✨ **Información del Proyecto**
 
 **Realizado por:**  
-[Tu Nombre Completo]  
+[Chuquiyauri Lagunas Albert Jeankarlo]  
 
 **Asignatura:**  
-Programación Orientada a Objetos  
+Taller VI Aplicaciones  
 
 **Docente a Cargo:**  
-[Nombre del Docente]  
+[Mg. Fernandez Bejarano Raul]  
 
 **Año Académico:**  
 2025
