@@ -38,7 +38,7 @@ Este proyecto es una aplicación de escritorio en Java Swing que permite **gesti
 
 ### Interfaz principal:
 
-![Interfaz principal](./screenshots/ui_formulario.png)
+![Interfaz principal](./ui_formulario.png)
 
 ### Componentes del formulario:
 
