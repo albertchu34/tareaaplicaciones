@@ -239,6 +239,7 @@ import modelo.Carnet;
 import modelo.Carrera;
 import modelo.Facultad;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextField;
 
 /**
  *
@@ -351,7 +352,24 @@ public class Inicio extends javax.swing.JFrame {
 
         jLabel1.setText("DNI");
 
+        txtDni.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtDniKeyTyped(evt);
+            }
+        });
+
         jLabel2.setText("CODIGO");
+
+        txtCodigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCodigoActionPerformed(evt);
+            }
+        });
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyTyped(evt);
+            }
+        });
 
         jLabel3.setText("NOMBRE");
 
@@ -479,6 +497,41 @@ public class Inicio extends javax.swing.JFrame {
         }
     }                                           
 
+    private void txtDniKeyTyped(java.awt.event.KeyEvent evt) {                                
+        char c = evt.getKeyChar();
+        String textoActual = ((JTextField) evt.getSource()).getText();
+
+        // Solo permitir números
+        if (!Character.isDigit(c)) {
+            evt.consume();
+        }
+
+        // Limitar a 8 dígitos
+        if (textoActual.length() >= 8) {
+            evt.consume();
+        }
+    }                               
+
+    private void txtCodigoActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        // TODO add your handling code here:
+    }                                         
+
+    private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {                                   
+        char c = evt.getKeyChar();
+        String textoActual = ((JTextField) evt.getSource()).getText();
+
+        // Permitir solo números y letras
+        if (!Character.isDigit(c) && !Character.isLetter(c)) {
+            evt.consume(); // Ignorar si no es número ni letra
+            return;
+        }
+
+        // Limitar a 7 dígitos/caracteres
+        if (textoActual.length() >= 7) {
+            evt.consume(); // Ignorar si se alcanza la longitud máxima
+        }
+    }                                  
+
     /**
      * @param args the command line arguments
      */
@@ -534,6 +587,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JTextField txtNombre;
     // End of variables declaration                   
 }
+
 ```
 ## 📜 codigo del controlador
 ```java
