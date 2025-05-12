@@ -1,7 +1,7 @@
 # 🌟 **Sistema de Gestión de Carnets Universitarios** 🌟
 
 <p align="center">
-  <img src="./screenshots/logo_upla.png" alt="Logo UPLA" width="200">
+  <img src="./screenshots/logoupla.png" alt="Logo UPLA" width="200">
 </p>
 
 ---
